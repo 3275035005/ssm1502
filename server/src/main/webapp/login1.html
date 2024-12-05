@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>旅游信息分享平台-登录</title>
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" type="text/css" href="css/login.css">
+	<!--导入jquery-->
+	<script src="js/jquery-3.3.1.js"></script>
+	<script>
+		$(function (){
+		//	通过Ajax提交数据
+			$("#login_button").click(function (){
+				$.post(
+						"web/user/login",
+						{
+							username: $("#username").val(),
+							password: $("#password").val()
+						},
+						function(data){
+							if(data.success){
+								location.href = "index.html";
+							}else{
+								console.log(data.message);
+								$("#errorMsg").html(data.message);
+							}
+						}
+				);
+			});
+		});
+
+		function register(){
+			location.href = "register.html";
+		}
+
+	</script>
+</head>
+
+<body>
+<!--引入头部-->
+<div id="header"></div>
+    <!-- 头部 end -->
+    <section id="login_wrap">
+        <div class="fullscreen-bg" style="background: url(images/login_bg.png);height: 730px;">
+
+        </div>
+        <div class="login-box">
+        	<div class="title">
+        		<span>欢迎登录旅游信息分享平台</span>
+        	</div>
+        	<div class="login_inner">
+
+				<!--登录错误提示消息-->
+        		<div id="errorMsg" class="alert alert-danger">
+
+				</div>
+				<form id="loginForm" action="" method="post" accept-charset="utf-8">
+					<input id="username" name="username" type="text" placeholder="请输入账号" autocomplete="off">
+        			<input id="password" name="password" type="password" placeholder="请输入密码" autocomplete="off">
+			<div class="submit_btn">
+        				<button type="button" id="login_button">登录</button>
+        			</div>
+        		</form>
+        		<div class="reg">没有账户？<a href="javascript:register();">立即注册</a></div>
+        	</div>
+        </div>
+    </section>
+    <!--引入尾部-->
+    <div id="footer"></div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <!--导入布局js，共享header和footer-->
+    <script type="text/javascript" src="js/include.js"></script>
+</body>
+
+</html>

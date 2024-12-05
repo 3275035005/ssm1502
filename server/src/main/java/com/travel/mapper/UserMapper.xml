@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.travel.entity.User">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="sex" jdbcType="CHAR" property="sex"/>
+        <result column="telephone" jdbcType="VARCHAR" property="telephone"/>
+        <result column="province" jdbcType="VARCHAR" property="province"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="status" jdbcType="CHAR" property="status"/>
+        <result column="sex" jdbcType="CHAR" property="sex"/>
+        <result column="created" jdbcType="VARCHAR" property="created"/>
+
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, `username`, password, name, sex, telephone, province, city, sex, created, status,email
+    </sql>
+
+
+
+    <select id="pageQuery" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from `user`
+        <where>
+            <if test="name != null and name != ''">
+                and name like "%" #{name}"%"
+            </if>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+        </where>
+        order by created desc
+    </select>
+
+    <select id="getById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from `user` where id = #{id}
+    </select>
+
+    <select id="getAll"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from `user`
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String">
+    delete from `user`
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.travel.entity.User"
+            useGeneratedKeys="true">
+    insert into `user` (`id`, `username`, password, `name`, sex, telephone, email,
+    province, city, status, created)
+    values (#{id,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+      #{name,jdbcType=VARCHAR}, #{sex,jdbcType=CHAR}, #{telephone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}
+      , #{province,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, #{status,jdbcType=CHAR}, #{created,jdbcType=VARCHAR})
+  </insert>
+    <update id="update" parameterType="com.travel.entity.User">
+        update user
+        <set>
+            <if test="username != null and username != ''">
+                `username` = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null and name != ''">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null and sex != ''">
+                sex = #{sex,jdbcType=CHAR},
+             </if>
+            <if test="telephone != null and telephone != ''">
+                `telephone` = #{telephone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null and email != ''">
+                `email` = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null and province != ''">
+                `province` = #{province,jdbcType=VARCHAR},
+            </if>
+
+            <if test="city != null and city != ''">
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status,jdbcType=CHAR},
+            </if>
+            <if test="created != null and created != ''">
+                created = #{created,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+
+
+    <select id="getOne"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from `user`
+        <where>
+        <if test="username != null and username != ''">
+            and `username` = #{username,jdbcType=VARCHAR}
+        </if>
+        <if test="password != null and password != ''">
+            and password = #{password,jdbcType=VARCHAR}
+        </if>
+        <if test="status != null and status != ''">
+            and status = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="name != null and name != ''">
+            and `name` = #{name,jdbcType=VARCHAR}
+        </if>
+        </where>
+    </select>
+</mapper>

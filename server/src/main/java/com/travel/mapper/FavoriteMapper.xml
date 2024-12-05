@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.mapper.FavoriteMapper">
+    <resultMap id="BaseResultMap" type="com.travel.entity.Favorite">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="uid" jdbcType="VARCHAR" property="uid" />
+        <result column="rid" jdbcType="VARCHAR" property="rid" />
+        <result column="created" jdbcType="VARCHAR" property="created" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, `uid`, rid, created
+  </sql>
+
+    <select id="pageQuery" resultMap="BaseResultMap">
+        select f.*, r.rname AS routeName, u.name AS userName
+        from `favorite` AS f
+        left join route AS r on f.rid = r.id
+        left join `user` AS u on f.uid = u.id
+        <where>
+            <if test="rid != null and rid !=''">
+                and f.rid = #{rid}
+            </if>
+            <if test="uid != null and uid !=''">
+                and f.uid = #{uid}
+            </if>
+
+        </where>
+        order by f.created desc
+    </select>
+    <select id="getByFavorite" resultMap="BaseResultMap">
+        select f.*
+        from `favorite` AS f
+        <where>
+            <if test="rid != null and rid !=''">
+                and f.rid = #{rid}
+            </if>
+            <if test="uid != null and uid !=''">
+                and f.uid = #{uid}
+            </if>
+
+        </where>
+        order by f.created desc
+    </select>
+
+    <select id="getAll" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from favorite
+        order by created desc
+    </select>
+
+    <select id="getById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from favorite
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    <select id="getByFavoriteList"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from favorite
+        <where>
+            <if test="rid != null and rid !=''">
+                and rid = #{rid}
+            </if>
+            <if test="uid != null and uid !=''">
+                and uid = #{uid}
+            </if>
+        </where>
+        order by created desc
+    </select>
+    <delete id="delete" parameterType="java.lang.String">
+    delete from favorite
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.travel.entity.Favorite">
+    insert into favorite (id, `uid`, rid,
+      created)
+    values (#{id,jdbcType=VARCHAR}, #{uid,jdbcType=VARCHAR}, #{rid,jdbcType=VARCHAR},
+      #{created,jdbcType=VARCHAR})
+  </insert>
+    <update id="update" parameterType="com.travel.entity.Favorite">
+        update favorite
+        <set>
+            <if test="uid != null">
+                `uid` = #{uid,jdbcType=VARCHAR},
+            </if>
+            <if test="rid != null">
+                rid = #{rid,jdbcType=VARCHAR},
+            </if>
+            <if test="created != null">
+                created = #{created,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+</mapper>

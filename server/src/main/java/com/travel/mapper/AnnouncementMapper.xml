@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.mapper.AnnouncementMapper">
+    <resultMap id="BaseResultMap" type="com.travel.entity.Announcement">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="content" jdbcType="VARCHAR" property="content" />
+        <result column="created" jdbcType="VARCHAR" property="created" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, title, content, created
+  </sql>
+    <select id="pageQuery" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from announcement
+        <where>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+        </where>
+        order by created desc
+    </select>
+
+    <select id="getAll"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from announcement
+        order by created desc
+    </select>
+    <select id="getById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from announcement
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    <delete id="delete" parameterType="java.lang.String">
+    delete from announcement
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.travel.entity.Announcement">
+    insert into announcement (id, title, content,
+      created)
+    values (#{id,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
+      #{created,jdbcType=VARCHAR})
+  </insert>
+    <update id="update" parameterType="com.travel.entity.Announcement">
+        update announcement
+        <set>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="created != null">
+                created = #{created,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+</mapper>

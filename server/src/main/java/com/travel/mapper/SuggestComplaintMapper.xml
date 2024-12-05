@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.mapper.SuggestComplaintMapper">
+
+
+    <resultMap id="BaseResultMap" type="com.travel.entity.SuggestComplaint">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="content" jdbcType="VARCHAR" property="content" />
+        <result column="uid" jdbcType="VARCHAR" property="uid" />
+        <result column="rid" jdbcType="VARCHAR" property="rid" />
+        <result column="type" jdbcType="CHAR" property="type" />
+        <result column="created" jdbcType="VARCHAR" property="created" />
+        <result column="rname" jdbcType="VARCHAR" property="rname" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, content, `uid`, rid, `type`, created
+  </sql>
+
+    <select id="pageQuery" resultMap="BaseResultMap">
+        select sc.*, r.rname AS rname, u.name AS name
+        from suggest_complaint AS sc
+        left join route AS r on sc.rid = r.id
+        left join `user` AS u on sc.uid = u.id
+        <where>
+            <if test="rid != null and rid !=''">
+                and sc.rid = #{rid}
+            </if>
+            <if test="uid != null and uid !=''">
+                and sc.uid = #{uid}
+            </if>
+            <if test="type != null and type !=''">
+                and sc.type = #{type}
+            </if>
+        </where>
+    </select>
+
+    <select id="getAll"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from suggest_complaint
+        order by created desc
+    </select>
+    <select id="getById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from suggest_complaint
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    <delete id="delete" parameterType="java.lang.String">
+    delete from suggest_complaint
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.travel.entity.SuggestComplaint">
+    insert into suggest_complaint (id, content, `uid`,
+      rid, `type`, created)
+    values (#{id,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{uid,jdbcType=VARCHAR},
+      #{rid,jdbcType=VARCHAR}, #{type,jdbcType=CHAR}, #{created,jdbcType=VARCHAR})
+  </insert>
+    <update id="update" parameterType="com.travel.entity.SuggestComplaint">
+        update suggest_complaint
+        <set>
+            <if test="content != null">
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="uid != null">
+                `uid` = #{uid,jdbcType=VARCHAR},
+            </if>
+            <if test="rid != null">
+                rid = #{rid,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                `type` = #{type,jdbcType=CHAR},
+            </if>
+            <if test="created != null">
+                created = #{created,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+
+</mapper>

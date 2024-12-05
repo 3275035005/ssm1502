@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>旅游信息分享平台-旅游攻略路线</title>
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" href="css/search.css">
+    <script src="js/jquery-3.3.1.js"></script>
+    <script src="js/getParameter.js"></script>
+    <script>
+
+        $(function() {
+            /*获取cname参数值*/
+            let rname = getParameter("rname");
+            /*如果rname不为空则进行转码*/
+            if(rname){
+                rname = window.decodeURIComponent(rname);
+            }
+            load("1", rname);
+
+            /*右侧推荐框*/
+            $.get("web/strategy/getThemeTour",function (res) {
+                let data = res.data.rows
+                let recommend = '<div class="top">' +
+'                        <div class="hot">HOT</div>' +
+'                        <span>热门推荐</span>' +
+'                    </div>' +
+'                    <ul>';
+
+                for (let i = 0; i < data.length; i++) {
+                    let li = '<li onclick="standAlone('+ data[i].id +')">' +
+'                            <div class="left"><img src="'+ data[i].image +'" alt=""></div>' +
+'                            <div class="right">' +
+'                                <p>'+ data[i].titles +'</p>' +
+'                                </p>' +
+'                            </div>' +
+'                        </li>';
+                    recommend += li;
+                }
+                recommend += '</ul>';
+                $("#right").html(recommend);
+
+            });
+        });
+
+        function load(currentPage, rname){
+            $.post("web/strategy/pageQuery/"+currentPage+"/5",function (res){
+                let labels = '';
+                let data =  res.data.rows;
+                for (let i = 0; i < data.length; i++) {
+                    labels += '<li>\n' +
+'                            <div class="img"><img style="width: 299px" src="'+ data[i].image+ '"></div>\n' +
+'                            <div class="text1">\n' +
+'                                <p>'+ data[i].titles +'</p>\n' +
+'                                <br/>\n' +
+'                            </div>\n' +
+'                            <div class="price">\n' +
+'                                <p><a href="strategy_detail.html?rid='+ data[i].id +'">查看详情</a></p>\n' +
+'                            </div>\n' +
+'                        </li>';
+                }
+                /*将这些商品条目放入表格中*/
+                $("#ulShow").html(labels);
+                /*设置总页数*/
+                $("#spanPage").html(res.data.totalPages);
+                /*设置总条数*/
+                $("#spanCount").html(res.data.totalCount);
+                /*得出当前页码*/
+                let page = (res.data.startPage/res.data.pageSize) + 1;
+                /*拼接页码*/
+                let a = '<li onclick="javascript:load(' + 1 + ',\''+ rname +'\')""><a href="#">首页</a></li><li onclick="javascript:load('+ (page - 1) +',\''+ rname +'\')" class="threeword">' +
+                    '<a href="#">上一页</a></li>';
+                /*保存当前页码*/
+                let current = page;
+                /*下一页*/
+                let xia = '<li onclick="javascript:load(' + (current+1) + ',\''+ rname +'\')" class="threeword"><a href="#">下一页</a></li>';
+
+
+                /*开始等于 当前页码-5 判断当前页码是否大于5*/
+                let start = 0;
+                let end = 0;
+
+                if(page > 5){
+                    start = page - 5;
+                    /*结束等于 当前页码+4  判断当前页码是否可以+4(总页码-4 > 当前页码)*/
+                    if((page + 5) < res.data.totalPages){
+                        end = page + 5;
+                    }else{
+                        /*如果不可则最大页码-10 得出开始页码*/
+                        start = res.data.totalPages - 10;
+                        /*结束页码等于最大页码*/
+                        end = res.data.totalPages;
+                    }
+                }else{
+                    start = 1;
+                    if(res.data.totalPages < 10){
+                        end = res.data.totalPages;
+                    }else {
+                        end = 10;
+                    }
+                }
+
+                for(let i = start; i < end + 1; i++){
+                    /*设置当前页码颜色*/
+                    if(current === i){
+                        a += '<li onclick="javascript:load(' + i + ',\''+ rname +'\')" style="background-color: yellow"><a href="#">'+ i +'</a></li>';
+                    }else{
+                        a += '<li onclick="javascript:load(' + i + ',\''+ rname +'\')"><a href="#">'+ i +'</a></li>';
+                    }
+                }
+                if(page < res.data.totalPages) {
+                    a += xia;
+                }
+                /*尾页设置*/
+                a += '<li onclick="javascript:load('+ res.data.totalPages +',\''+ rname +'\')" class="threeword"><a href="#">末页</a></li>';
+                $("#ulLimitPage").html(a);
+            });
+        }
+    </script>
+</head>
+
+<body>
+<!--引入头部-->
+<div id="header"></div>
+    <div class="page_one">
+        <div class="contant">
+            <div class="crumbs">
+                <img src="images/search.png" alt="">
+                <p>旅游信息分享平台><span>旅游攻略路线</span></p>
+            </div>
+            <div class="xinxi clearfix">
+                <div class="left">
+                    <div class="header">
+                        <span>旅游攻略路线标题</span>
+                    </div>
+                    <ul id="ulShow">
+
+                    </ul>
+                    <div class="page_num_inf">
+                        <i></i> 共
+                        <span id="spanPage"></span>页<span id="spanCount"></span>条
+                    </div>
+                    <div class="pageNum">
+                        <ul id="ulLimitPage">
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="right" id="right">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--引入头部-->
+    <div id="footer"></div>
+    <!--导入布局js，共享header和footer-->
+    <script type="text/javascript" src="js/include.js"></script>
+</body>
+
+</html>

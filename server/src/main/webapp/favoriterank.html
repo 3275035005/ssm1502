@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>热门景点统计排行</title>
+        <link rel="stylesheet" type="text/css" href="css/common.css">
+        <link rel="stylesheet" type="text/css" href="css/ranking-list.css">
+        <script src="js/jquery-3.3.1.js"></script>
+        <script>
+            $(function (){
+                rankingAjax("1", null);
+            });
+
+            function rankingAjax(currentPage, rname) {
+                if(rname){
+                    rname = window.decodeURIComponent(rname);
+                }
+                $.post("/web/route/countPageQuery/"+currentPage+"/10", {rname: rname}, function (res) {
+
+                    let data = res.data.rows
+                    let li = '';
+                    for (let i = 0; i < data.length; i++) {
+                        li += '<li>';
+                        if ((i + 1) == 1) {
+                            li += '<span class="num one">' + (i + 1) + '</span>\n';
+                        } else {
+                            if ((i + 1) == 2) {
+                                li += '<span class="num two">' + (i + 1) + '</span>\n';
+                            } else {
+                                li += '<span class="num">' + (i + 1) + '</span>\n';
+                            }
+                        }
+                        li += '<a href="route_detail.html?rid=' + data[i].id + '"><img src="' + data[i].rimage + '" alt=""></a>' +
+                            '                              <h4><a href="route_detail.html?rid=' + data[i].id + '">' + data[i].rname + '</a></h4>' +
+                            '                            <p>' +
+                            '                           <b class="price">&yen;<span>' + data[i].price + '</span>起</b>' +
+                            '                           <span class="shouchang">热度值' + data[i].count + '</span>' +
+                            '                                </p>' +
+                            '                              </li>';
+                    }
+                    $("#keepUl").html(li);
+                    currentPage = (res.data.startPage / res.data.pageSize) + 1;
+                    /*分页栏*/
+                    let pageCode = '<li onclick="javascript:rankingAjax(\'' + 1 + '\',\'' + rname + '\')" ><a href="#">首页</a></li>';
+                    if ((currentPage - 1) > 0) {
+                    pageCode += '<li onclick="javascript:rankingAjax(' + (currentPage-1) + ',\'' + rname + '\')" class="threeword"><a href="#">上一页</a></li>';
+                    }
+                    /*计算当前页码 (开始位置 / 显示条数) + 1*/
+                    /*计算开始页码  前5后4*/
+                    let current = 0;
+                    if((currentPage - 5) > 0){
+                        current = (currentPage -5);
+                    }
+                    /*计算结束页码*/
+                    let endCurrent = 0;
+                    if((currentPage + 4) < res.data.totalPages){
+                        if((currentPage + 4) < 10) {
+                            endCurrent = 10;
+                        }else{
+                            endCurrent = (currentPage + 4);
+                        }
+
+                    }else{
+                        /*最大页码 = 总页码 - 当前页码*/
+                        endCurrent = currentPage + (res.data.totalPages - currentPage);
+                    }
+
+                    for(let i = current; i < endCurrent; i++){
+                        if(currentPage === (i+1)){
+                            pageCode += '<li onclick="javascript:rankingAjax(' + (i+1) + ',\'' + rname + '\')" style="background-color: yellow"><a href="#">'+ (i+1) +'</a></li>';
+                        }else{
+                            pageCode += '<li onclick="javascript:rankingAjax(' + (i+1) + ',\'' + rname + '\')" ><a href="#">'+ (i+1) +'</a></li>';
+                        }
+                     }
+                    if ((currentPage) < res.data.totalPages) {
+                        pageCode += '<li onclick="javascript:rankingAjax(' + (currentPage + 1) + ',\'' + rname + '\')" class="threeword"><a href="javascript:;">下一页</a></li>';
+                    }
+                    pageCode += '<li onclick="javascript:rankingAjax(' + res.data.totalPages + '\'' + rname + '\')" class="threeword"><a href="#">末页</a></li>';
+
+                    $("#pageUl").html(pageCode);
+                });
+            }
+
+            /*搜索*/
+            function searchClick(){
+                /*获取路线名称val*/
+                let routeName = $("#routeName").val();
+                rankingAjax("1", routeName);
+            }
+
+        </script>
+    </head>
+    <body>
+    <!--引入头部-->
+    <div id="header"></div>
+        <div class="contant">
+            <div class="shaixuan">
+                <span>景点名称</span>
+                <input type="text" id="routeName">
+                <button onclick="javascript:searchClick()">搜索</button>
+            </div>
+            <div class="list clearfix">
+                <ul id="keepUl">
+
+                </ul>
+            </div>
+            <div class="pageNum">
+                <ul id="pageUl">
+                </ul>
+            </div>
+        </div>
+
+         <!--导入底部-->
+   		 <div id="footer"></div>
+    <!--导入布局js，共享header和footer-->
+    <script type="text/javascript" src="js/include.js"></script>
+    </body>
+</html>

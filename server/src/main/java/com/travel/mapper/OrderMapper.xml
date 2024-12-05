@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.mapper.OrderMapper">
+    <resultMap id="BaseResultMap" type="com.travel.entity.Order">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="rid" jdbcType="VARCHAR" property="rid" />
+        <result column="uid" jdbcType="VARCHAR" property="uid" />
+        <result column="price" jdbcType="DECIMAL" property="price" />
+        <result column="status" jdbcType="CHAR" property="status" />
+        <result column="created" jdbcType="VARCHAR" property="created" />
+        <result column="rname" jdbcType="VARCHAR" property="rname" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+    </resultMap>
+      <sql id="Base_Column_List">
+            id, rid, `uid`, price, `status`, created
+      </sql>
+    <select id="pageQuery" resultMap="BaseResultMap">
+        select o.*, r.rname AS rname, u.name AS name
+        from `orders` AS o
+        left join route AS r on o.rid = r.id
+        left join `user` AS u on o.uid = u.id
+        <where>
+            <if test="rid != null and rid !=''">
+                and o.rid = #{rid}
+            </if>
+            <if test="uid != null and uid !=''">
+                and o.uid = #{uid}
+            </if>
+            <if test="status != null and status !=''">
+                and o.status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="getOrderByUid" resultMap="BaseResultMap">
+        select o.*, r.rname AS rname, u.name AS name
+        from `orders` AS o
+        left join route AS r on o.rid = r.id
+        left join `user` AS u on o.uid = u.id
+        <where>
+            <if test="uid != null and uid !=''">
+                and o.uid = #{uid}
+            </if>
+        </where>
+        order by created desc
+    </select>
+    <select id="getByOrder" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from `orders`
+        <where>
+            <if test="uid != null and uid !=''">
+                and uid = #{uid}
+            </if>
+            <if test="rid != null and rid !=''">
+                and rid = #{rid}
+            </if>
+            <if test="status != null and status !=''">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="getAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from orders
+        order by created desc
+    </select>
+    <select id="getById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from orders
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    <delete id="delete" parameterType="java.lang.String">
+    delete from orders
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.travel.entity.Order">
+    insert into orders (id, rid, `uid`,
+      price, `status`, created
+      )
+    values (#{id,jdbcType=VARCHAR}, #{rid,jdbcType=VARCHAR}, #{uid,jdbcType=VARCHAR},
+      #{price,jdbcType=DECIMAL}, #{status,jdbcType=CHAR}, #{created,jdbcType=VARCHAR}
+      )
+  </insert>
+    <update id="update" parameterType="com.travel.entity.Order">
+        update orders
+        <set>
+            <if test="rid != null">
+                rid = #{rid,jdbcType=VARCHAR},
+            </if>
+            <if test="uid != null">
+                `uid` = #{uid,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=CHAR},
+            </if>
+            <if test="created != null">
+                created = #{created,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+
+
+</mapper>

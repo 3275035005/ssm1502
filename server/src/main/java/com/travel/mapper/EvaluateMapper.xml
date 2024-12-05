@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.mapper.EvaluateMapper">
+
+    <resultMap id="BaseResultMap" type="com.travel.entity.Evaluate">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="content" jdbcType="VARCHAR" property="content" />
+        <result column="uid" jdbcType="VARCHAR" property="uid" />
+        <result column="created" jdbcType="VARCHAR" property="created" />
+        <result column="rid" jdbcType="VARCHAR" property="rid" />
+        <result column="routeName" jdbcType="VARCHAR" property="routeName" />
+        <result column="userName" jdbcType="VARCHAR" property="userName" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, content, `uid`, created, rid
+  </sql>
+    <select id="pageQuery" resultMap="BaseResultMap">
+
+        select e.*, r.rname AS routeName, u.name AS userName
+        from `evaluate` AS e
+        left join route AS r on e.rid = r.id
+        left join `user` AS u on e.uid = u.id
+        <where>
+            <if test="rid != null and rid !=''">
+                and e.rid = #{rid}
+            </if>
+            <if test="uid != null and uid !=''">
+                and e.uid = #{uid}
+            </if>
+            <if test="content != null and content !=''">
+                and e.content like "%"#{content}"%"
+            </if>
+
+        </where>
+        order by created desc
+    </select>
+    <select id="getById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from evaluate
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    <delete id="delete" parameterType="java.lang.String">
+    delete from evaluate
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.travel.entity.Evaluate">
+    insert into evaluate (id, content, `uid`,
+      created, rid)
+    values (#{id,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{uid,jdbcType=VARCHAR},
+      #{created,jdbcType=VARCHAR}, #{rid,jdbcType=VARCHAR})
+  </insert>
+    <update id="update" parameterType="com.travel.entity.Evaluate">
+        update evaluate
+        <set>
+            <if test="content != null">
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="uid != null">
+                `uid` = #{uid,jdbcType=VARCHAR},
+            </if>
+            <if test="created != null">
+                created = #{created,jdbcType=VARCHAR},
+            </if>
+            <if test="rid != null">
+                rid = #{rid,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="getByRid" resultType="com.travel.entity.Evaluate">
+        select e.*
+        from `evaluate` AS e
+        where e.rid = #{rid}
+    </select>
+</mapper>

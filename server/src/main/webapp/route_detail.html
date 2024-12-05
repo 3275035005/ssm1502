@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>旅游信息分享平台-景点详情</title>
+<!--    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/route-detail.css">
+</head>
+
+<body>
+<!--引入头部-->
+<div id="header"></div>
+<!-- 详情 start -->
+<div id="wraps" class="wrap">
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    ×
+                </button>
+                <h4 class="modal-title">
+                    投诉
+                </h4>
+            </div>
+            <form>
+                <div class="modal-body">
+                   <textarea cols="70" rows="5" id="contents1"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" onclick="addSuggestComplaint('1')" class="btn btn-primary">
+                        提交投诉
+                    </button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    ×
+                </button>
+                <h4 class="modal-title">
+                    建议
+                </h4>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <textarea cols="70" rows="5" id="contents2"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" onclick="addSuggestComplaint('2')" class="btn btn-primary">
+                        提交建议
+                    </button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<div class="you_need_konw">
+    <a class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal1">投诉</a>
+    <a class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal2">建议</a>
+</div>
+<div class="you_need_konw">
+    <span>景点评价</span>
+    <div class="notice" id="evaluate">
+    </div>
+    <div style="margin-left: 698px">
+        <input id="search_input2" type="text" placeholder="请输入评价内容" style="  float: left;
+    width: 400px;
+    height: 36px;
+    border: 1px solid #ffc900;
+    padding-left: 10px;" autocomplete="off">
+        <a id="search-button" href="javascript:void(0);" class="search-button">发布评价</a>
+    </div>
+</div>
+
+<div class="you_need_konw">
+    <span>景点须知</span>
+    <div class="notice" id="content">
+    </div>
+</div>
+</div>
+<!-- 详情 end -->
+
+<!--引入头部-->
+<div id="footer"></div>
+<script src="js/jquery-3.3.1.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<!--导入布局js，共享header和footer-->
+<script type="text/javascript" src="js/include.js"></script>
+<script src="js/getParameter.js"></script>
+<script>
+    function findKeep(rid,obj){
+        $.get("web/favorite/getIsFavorite/"+rid, function (data){
+            console.log(data)
+            if(data.success){
+                // a = '<a  class="btn already" disabled="disabled"><i class="glyphicon glyphicon-heart-empty"></i>点击收藏</a>';
+                $(obj).addClass("already");
+                $(obj).prop('disabled', "disabled");
+            }else{
+                $(obj).removeClass("already");
+                $(obj).removeProp('disabled', "disabled");
+            }
+        })
+    }
+
+
+    $(function (){
+        let rid = getParameter("rid");
+        $.get("web/route/getRouteDetails/"+rid,function (res) {
+
+            let data = res.data.rows;
+            /*合成图片显示a标签*/
+            let routeDetails = '<div class="bread_box">\n' +
+                '        <a href="index.html">首页</a>\n' +
+                '        <span> &gt;</span>\n' +
+                '        <a href="#">' + data.rname + '</a>\n' +
+                '    </div>\n' +
+                '    <div class="prosum_box">\n' +
+                '        <dl class="prosum_left">\n' +
+                '            <dt>\n' +
+                '                <img alt="" class="big_img" src="' + data.rimage + '">\n' +
+                '            </dt>\n' +
+                '            <dd>\n' +
+                '<a class="up_img up_img_disable"></a> ';
+
+            routeDetails += '<a class="down_img down_img_disable" style="margin-bottom: 0;"></a>' +
+                '            </dd>\n' +
+                '        </dl>\n' +
+                '        <div class="prosum_right">\n' +
+                '            <p class="pros_title">' + data.rname + '</p>\n' +
+                '            <p class="hot">' + data.routeIntroduce + '</p>\n' +
+                '            <div class="pros_other">\n' +
+                '                <p>咨询电话 :' + data.phone + ' </p>\n' +
+                '                <p>地址 ： ' + data.address + ' </p>\n' +
+                '            </div>\n' +
+                '            <div class="pros_price">\n' +
+                '                <p class="price"><strong>¥ ' + data.price + '</strong><span>起</span></p>\n' +
+                '                <p class="price"><a href="javascript:void(0);" class="search-button" onclick="sendOrder()">点击购票</a></p>\n' +
+                '                <p class="collect" style="margin-top: 60px;"> <a class="btn" onclick="favoritesSwitch()" id="keep"><i class="glyphicon glyphicon-heart-empty"></i>点击收藏</a>' +
+                '                    <span>热度值<span id="spanCount">' + data.count + '</span></span>\n' +
+                '                </p>\n' +
+                '            </div>\n' +
+                '        </div><p>';
+            $("#wraps").html(routeDetails);
+            $("#content").html(data.content);
+
+            findKeep(rid, $("#keep"));
+        });
+
+        // 发布评价
+        $("#search-button").click(function (){
+            /*判断用户是否登录*/
+            $.get("web/user/find", function (res) {
+                console.log(res);
+                if (res.success) {
+                    saveEvaluate(rid);
+                } else {
+                    /*用户未登录*/
+                    alert("请您先登录,再进行操作");
+                    location.href = "login1.html";
+                }
+            })
+        });
+
+        // 购票
+        $("#sendOrder").click(function (){
+            $.post("web/order/sendOrder",{rid: rid}, function (res) {
+                alert(res.message)
+            });
+        });
+
+        getEvaluate(rid)
+    });
+
+    function saveEvaluate(rid){
+        let rname = $("#search_input2").val();
+        if(rname == null || rname === '' || rname === undefined){
+            alert("请输入评价内容")
+            return false;
+        }
+
+        $.post("web/evaluate/saveEvaluate",{content: rname,rid: rid}, function (res) {
+            alert("发布评价成功")
+            $("#search_input2").val("");
+            getEvaluate(rid);
+        });
+    }
+
+
+    function getEvaluate(rid){
+        // 查询评价
+        $.get("web/evaluate/getList/"+rid,function (res){
+            let data = res.data.rows;
+            let routeDetails = '';
+            for (let i = 0; i < data.length; i++) {
+                routeDetails+='<div style="border-bottom: 1px solid #eee; margin-bottom: 10px">\n' +
+                    '                              <spans>'+data[i].userName+'：</spans>\n' +
+                    '                           <spans>'+data[i].content+'</spans>\n' +
+                    '                            <spans style="margin-left: 800px">'+data[i].created+'</spans></div>';
+            }
+            $("#evaluate").html(routeDetails);
+        });
+    }
+    /*页面加载时 睡眠500ms防止图片轮播失败*/
+    $(function (){
+        setTimeout(function() {
+
+            $(document).ready(function() {
+                //焦点图效果
+                //点击图片切换图片
+                $('.little_img').on('mousemove', function() {
+                    $('.little_img').removeClass('cur_img');
+                    var big_pic = $(this).data('bigpic');
+                    $('.big_img').attr('src', big_pic);
+                    $(this).addClass('cur_img');
+                });
+
+                //上下切换
+                var picindex = 0;
+                var nextindex = 4;
+                $('.down_img').on('click',function(){
+                    var num = $('.little_img').length;
+                    if((nextindex + 1) <= num){
+                        $('.little_img:eq('+picindex+')').hide();
+                        $('.little_img:eq('+nextindex+')').show();
+                        picindex = picindex + 1;
+                        nextindex = nextindex + 1;
+                    }
+                });
+
+                $('.up_img').on('click',function(){
+                    var num = $('.little_img').length;
+                    if(picindex > 0){
+                        $('.little_img:eq('+(nextindex-1)+')').hide();
+                        $('.little_img:eq('+(picindex-1)+')').show();
+                        picindex = picindex - 1;
+                        nextindex = nextindex - 1;
+                    }
+                });
+                //自动播放
+                // var timer = setInterval("auto_play()", 5000);
+            });
+
+            //自动轮播方法
+            function auto_play() {
+                var cur_index = $('.prosum_left dd').find('a.cur_img').index();
+                cur_index = cur_index - 1;
+                var num = $('.little_img').length;
+                var max_index = 3;
+                if ((num - 1) < 3) {
+                    max_index = num - 1;
+                }
+                if (cur_index < max_index) {
+                    var next_index = cur_index + 1;
+                    var big_pic = $('.little_img:eq(' + next_index + ')').data('bigpic');
+                    $('.little_img').removeClass('cur_img');
+                    $('.little_img:eq(' + next_index + ')').addClass('cur_img');
+                    $('.big_img').attr('src', big_pic);
+                } else {
+                    var big_pic = $('.little_img:eq(0)').data('bigpic');
+                    $('.little_img').removeClass('cur_img');
+                    $('.little_img:eq(0)').addClass('cur_img');
+                    $('.big_img').attr('src', big_pic);
+                }
+            }
+        }, 500);
+    });
+
+    function favoritesSwitch(){
+        /*判断用户是否登录*/
+        $.get("web/user/find", function (res) {
+            console.log(res);
+            if(res.success){
+                /*用户已登录*/
+                /*获取rid*/
+                let rid = getParameter("rid");
+                $.post("web/favorite/favoritesSwitch/"+rid, function (data){
+                    let spanCount = parseInt($("#spanCount").html());
+                    if(data.success){
+                        spanCount += 1;
+                        $("#keep").addClass("already");
+                        $("#keep").prop('disabled', "disabled");
+                        alert("收藏成功");
+                    }else{
+                        spanCount -= 1;
+                        $("#keep").removeClass("already");
+                        $("#keep").removeProp('disabled', "disabled");
+                        alert("取消收藏成功");
+                    }
+                    $("#spanCount").html(spanCount);
+
+                });
+            }else{
+                /*用户未登录*/
+                alert("请您先登录,再进行操作");
+                location.href = "login1.html";
+            }
+        });
+
+    }
+
+    function sendOrder(){
+        /*判断用户是否登录*/
+        $.get("web/user/find", function (res) {
+            if(res.success){
+                let rid = getParameter("rid");
+                $.post("web/order/sendOrder", {rid: rid}, function (data){
+                    alert(data.message);
+                });
+            }else{
+                /*用户未登录*/
+                alert("请您先登录,再进行操作");
+                location.href = "login1.html";
+            }
+        });
+    }
+
+    function addSuggestComplaint(type){
+        $.get("web/user/find", function (res) {
+            if(res.success){
+                let rid = getParameter("rid");
+                let contents1 = $("#contents1").val();
+                let contents2 = $("#contents2").val();
+                if((contents1 == null || contents1 === '' || contents1 === undefined) && (contents2 == null || contents2 === '' || contents2 === undefined)){
+                    alert("请填写内容")
+                    return;
+                }
+                $.post("web/suggestComplaint/sendSuggestComplaint",{
+                    rid:rid,
+                    type: type,
+                    content: contents1 == ''?contents2:contents1
+                }, function (data){
+                    $("#contents1").val("");
+                    $("#contents2").val("");
+
+                    $("#myModal1").modal('hide');
+                    $("#myModal2").modal('hide')
+                    if(data.success){
+                        alert("提交成功");
+                    }
+                });
+            }else{
+                /*用户未登录*/
+                alert("请您先登录,再进行操作");
+                location.href = "login1.html";
+            }
+        });
+
+    }
+</script>
+</body>
+
+</html>

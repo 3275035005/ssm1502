@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.mapper.LeaveMapper">
+
+    <resultMap id="BaseResultMap" type="com.travel.entity.Leave">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="uid" jdbcType="VARCHAR" property="uid" />
+        <result column="ucontent" jdbcType="VARCHAR" property="ucontent" />
+        <result column="acontent" jdbcType="VARCHAR" property="acontent" />
+        <result column="acreated" jdbcType="VARCHAR" property="acreated" />
+        <result column="created" jdbcType="VARCHAR" property="created" />
+        <result column="userName" jdbcType="VARCHAR" property="userName" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, `uid`, ucontent, acontent, acreated, created
+  </sql>
+
+
+    <select id="pageQuery" resultMap="BaseResultMap">
+
+        select l.*, u.name AS userName
+        from `leaves` AS l
+        left join `user` AS u on l.uid = u.id
+        <where>
+            <if test="ucontent != null and ucontent !=''">
+                and l.ucontent like "%" #{ucontent} "%"
+            </if>
+            <if test="uid != null and uid !=''">
+                and l.uid = #{uid}
+            </if>
+
+        </where>
+        order by l.created desc
+    </select>
+    <select id="getByUid" resultMap="BaseResultMap">
+        select l.*
+        from `leaves` AS l
+        <where>
+            <if test="uid != null and uid !=''">
+                and l.uid = #{uid}
+            </if>
+
+        </where>
+        order by l.created desc
+    </select>
+    <select id="getById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from leaves
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from leaves
+        order by created desc
+    </select>
+    <delete id="delete" parameterType="java.lang.String">
+    delete from leaves
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.travel.entity.Leave">
+    insert into leaves (id, `uid`, ucontent,
+      acontent, acreated, created
+      )
+    values (#{id,jdbcType=VARCHAR}, #{uid,jdbcType=VARCHAR}, #{ucontent,jdbcType=VARCHAR},
+      #{acontent,jdbcType=VARCHAR}, #{acreated,jdbcType=VARCHAR}, #{created,jdbcType=VARCHAR}
+      )
+  </insert>
+    <update id="update" parameterType="com.travel.entity.Leave">
+        update leaves
+        <set>
+            <if test="uid != null">
+                `uid` = #{uid,jdbcType=VARCHAR},
+            </if>
+            <if test="ucontent != null">
+                ucontent = #{ucontent,jdbcType=VARCHAR},
+            </if>
+            <if test="acontent != null">
+                acontent = #{acontent,jdbcType=VARCHAR},
+            </if>
+            <if test="acreated != null">
+                acreated = #{acreated,jdbcType=VARCHAR},
+            </if>
+            <if test="created != null">
+                created = #{created,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

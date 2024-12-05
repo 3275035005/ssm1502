@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.mapper.RouteMapper">
+
+
+    <resultMap id="BaseResultMap" type="com.travel.entity.Route">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="rname" jdbcType="VARCHAR" property="rname" />
+        <result column="price" jdbcType="DECIMAL" property="price" />
+        <result column="routeIntroduce" jdbcType="VARCHAR" property="routeIntroduce" />
+        <result column="rflag" jdbcType="CHAR" property="rflag" />
+        <result column="rimage" jdbcType="VARCHAR" property="rimage" />
+        <result column="isThemeTour" jdbcType="CHAR" property="isThemeTour" />
+        <result column="count" jdbcType="INTEGER" property="count" />
+        <result column="phone" jdbcType="VARCHAR" property="phone" />
+        <result column="address" jdbcType="VARCHAR" property="address" />
+        <result column="created" jdbcType="VARCHAR" property="created" />
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.travel.entity.Route">
+        <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, rname, price, routeIntroduce, rflag, rimage, isThemeTour, `count`, phone, address,
+    created
+  </sql>
+    <sql id="Blob_Column_List">
+    content
+  </sql>
+    <select id="pageQuery" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from route
+        <where>
+            <if test="rname != null and rname != ''">
+                and rname like "%" #{rname} "%"
+            </if>
+            <if test="rflag != null and rflag != ''">
+                and rflag = #{rflag}
+            </if>
+            <if test="isThemeTour != null and isThemeTour != ''">
+                and isThemeTour = #{isThemeTour}
+            </if>
+        </where>
+        order by created desc
+    </select>
+
+    <select id="pageQueryOrderByCount" resultMap="ResultMapWithBLOBs">
+
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from route
+        <where>
+            <if test="rname != null and rname != ''">
+                and rname like "%" #{rname} "%"
+            </if>
+            <if test="rflag != null and rflag != ''">
+                and rflag = #{rflag}
+            </if>
+            <if test="isThemeTour != null and isThemeTour != ''">
+                and isThemeTour = #{isThemeTour}
+            </if>
+        </where>
+        order by `count` desc
+    </select>
+     <select id="getRoute" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from route
+        <where>
+            <if test="route.rname != null and route.rname != ''">
+                and rname like "%" #{route.rname} "%"
+            </if>
+            <if test="route.rflag != null and route.rflag != ''">
+                and rflag = #{route.rflag}
+            </if>
+            <if test="route.isThemeTour != null and route.isThemeTour != ''">
+                and isThemeTour = #{route.isThemeTour}
+            </if>
+            <if test="list != null and list.size > 0">
+                and id not in
+                <foreach collection="list" item="i" open="(" close=")" separator="," >
+                    #{i.id}
+                </foreach>
+            </if>
+
+        </where>
+        order by created desc
+    </select>
+
+
+    <select id="getAll" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from route
+        order by created desc
+    </select>
+
+    <select id="getById" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from route
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    <delete id="delete" parameterType="java.lang.String">
+    delete from route
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.travel.entity.Route">
+    insert into route (id, rname, price,
+      routeIntroduce, rflag, rimage,
+      isThemeTour, `count`, phone,
+      address, created, content
+      )
+    values (#{id,jdbcType=VARCHAR}, #{rname,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL},
+      #{routeIntroduce,jdbcType=VARCHAR}, #{rflag,jdbcType=CHAR}, #{rimage,jdbcType=VARCHAR},
+      #{isThemeTour,jdbcType=CHAR}, #{count,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR},
+      #{address,jdbcType=VARCHAR}, #{created,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+    <update id="update" parameterType="com.travel.entity.Route">
+    update route
+    set rname = #{rname,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DECIMAL},
+      routeIntroduce = #{routeIntroduce,jdbcType=VARCHAR},
+      rflag = #{rflag,jdbcType=CHAR},
+      rimage = #{rimage,jdbcType=VARCHAR},
+      isThemeTour = #{isThemeTour,jdbcType=CHAR},
+      `count` = #{count,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      created = #{created,jdbcType=VARCHAR},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+
+
+
+</mapper>

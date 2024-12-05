@@ -1,0 +1,84 @@
+
+<script>
+
+    $(function (){
+
+        /*获取导航栏标签名*/
+        $.get(
+            "web/user/find",
+            {},
+            function (res){
+                $("#span_name").html("欢迎回来：" + res.data.rows.name);
+                $("#login_div").removeAttr("hidden");
+                $("#login_a").html("");
+                $("#login_register").html("");
+            }
+        );
+
+        $("#search-button").click(function (){
+            /*获取搜索输入框内容*/
+            let rname = $("#search_input").val();
+            /*页面跳转*/
+            location.href = 'route_list.html?rname=' + rname;
+        });
+        $("#out").click(function (){
+            $.get(
+                "out",
+                function(data){
+                    location.href = "index.html";
+                }
+            );
+        });
+
+
+    });
+    function changeNav(ele) {
+
+        $(ele).siblings('li').removeClass("nav-active");
+
+        $(ele).addClass("nav-active");
+    }
+</script>
+
+<!-- 头部 start -->
+    <header id="header">
+        <div class="shortcut">
+            <!-- 未登录状态  -->
+            <div class="login_out" id="login_no">
+                <a href="login1.html" id="login_a">登录</a>
+                <a href="register.html" id="login_register">注册</a>
+            </div>
+            <!-- 登录状态  -->
+            <div class="login" id="login_div" hidden>
+                <span id="span_name"></span>
+                <a href="myfavorite.html" class="collection">收藏</a>
+                <a href="myorder.html" class="collection">订单</a>
+                <a href="personal.html" class="collection">个人中心</a>
+                <a href="#" id="out">退出登录</a>
+            </div>
+        </div>
+        <div class="header_wrap">
+            <div class="topbar">
+                <div class="logo">
+                    旅游信息分享平台
+                </div>
+                <div class="search">
+                    <!--当按钮按下时，获取input中的内容-->
+                    <input id="search_input" type="text" placeholder="请输入景点名称" class="search_input" autocomplete="off">
+                    <a id="search-button" href="javascript:void(0);" class="search-button">搜索</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- 头部 end -->
+     <!-- 首页导航 -->
+    <div class="navitem">
+        <ul id="ulId" class="nav">
+            <li class="nav-active"><a href="index.html">首页</a></li>
+            <li onmouseover='changeNav(this)'><a href="route_list.html">景点</a></li>
+            <li onmouseover='changeNav(this)'><a href="strategy_list.html">旅游攻略</a></li>
+            <li onmouseover='changeNav(this)'><a href="announcement_list.html">公告</a></li>
+            <li onmouseover='changeNav(this)'><a href="leave_list.html">留言</a></li>
+            <li onmouseover='changeNav(this)'><a href="favoriterank.html">热门景点统计排行</a></li>
+        </ul>
+    </div>

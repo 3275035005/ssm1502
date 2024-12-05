@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.mapper.AdminMapper">
+
+    <resultMap id="BaseResultMap" type="com.travel.entity.Admin">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="account" jdbcType="VARCHAR" property="account"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="created" jdbcType="VARCHAR" property="created"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, `account`, password, created, status, name
+    </sql>
+
+
+    <select id="pageQuery" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from admin
+        <where>
+            <if test="account != null and account != ''">
+                and account = #{account}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+        </where>
+        order by created desc
+    </select>
+
+    <select id="getById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from admin where id = #{id}
+    </select>
+
+    <select id="getAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from admin
+    </select>
+    <select id="getByAdmin" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from admin
+        <where>
+        <if test="account != null and account != ''">
+            and `account` = #{account,jdbcType=VARCHAR}
+        </if>
+        <if test="password != null and password != ''">
+            and password = #{password,jdbcType=VARCHAR}
+        </if>
+        <if test="status != null and status != ''">
+            and status = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="name != null and name != ''">
+            and `name` = #{name,jdbcType=VARCHAR}
+        </if>
+        </where>
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String">
+    delete from admin
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.travel.entity.Admin"
+            useGeneratedKeys="true">
+    insert into admin (`id`, `account`, password, created,
+      status, `name`)
+    values (#{id,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+      #{created,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR})
+  </insert>
+    <update id="update" parameterType="com.travel.entity.Admin">
+        update admin
+        <set>
+            <if test="account != null and account != ''">
+                `account` = #{account,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password,jdbcType=CHAR},
+            </if>
+            <if test="created != null and created != ''">
+                created = #{created,jdbcType=INTEGER},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null and name != ''">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+</mapper>

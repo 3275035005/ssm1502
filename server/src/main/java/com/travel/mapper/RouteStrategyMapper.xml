@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.travel.mapper.RouteStrategyMapper">
+    <delete id="deleteByStrategyId">
+        delete
+        from route_strategy
+        where strategy_id = #{strategyId}
+    </delete>
+
+    <select id="getRouteNameByStrategyId" resultType="java.lang.String">
+        select
+            r.rname
+        from route_strategy AS rs
+        left join route AS r on rs.route_id = r.id
+        where rs.strategy_id = #{strategyId}
+    </select>
+    <select id="getRouteIdByStrategyId" resultType="java.lang.String">
+          select
+            route_id
+        from route_strategy
+        where strategy_id = #{strategyId}
+    </select>
+
+    <delete id="delete">
+    delete from route_strategy
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.travel.entity.RouteStrategy">
+    insert into route_strategy (`id`, strategy_id, route_id)
+    values (#{id,jdbcType=VARCHAR}, #{strategyId,jdbcType=VARCHAR}, #{routeId,jdbcType=VARCHAR})
+  </insert>
+
+</mapper>
